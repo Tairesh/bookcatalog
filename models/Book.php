@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\db\ActiveRecord;
+use app\components\ImageBehaviorBlockDelete;
 
 /**
  * Книга. Таблица `books`
@@ -57,7 +58,7 @@ class Book extends ActiveRecord {
     public function behaviors() {
         return [
             [
-                'class' => \maxmirazh33\image\Behavior::className(),
+                'class' => ImageBehaviorBlockDelete::className(),
                 'savePathAlias' => '@app/web/images/',
                 'urlPrefix' => '/images/',
                 'crop' => true,
