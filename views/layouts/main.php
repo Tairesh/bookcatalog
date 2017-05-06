@@ -38,7 +38,7 @@ AppAsset::register($this);
         'items' => [
             ['label' => 'Главная', 'url' => ['/site/index']],
             ['label' => 'Каталог', 'url' => ['/book/index']],
-            ['label' => 'Лог', 'url' => ['/log/index']],
+            ['label' => 'Лог', 'url' => ['/log/index', 'sort' => '-time']],
             Yii::$app->user->isGuest ? (
                 ['label' => 'Вход', 'url' => ['/site/login']]
             ) : (

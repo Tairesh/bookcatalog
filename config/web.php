@@ -43,6 +43,9 @@ $config = [
             'showScriptName' => false,
             'rules' => [],
         ],
+        'eventsLog' => [
+            'class' => 'app\components\Logger',
+        ]
     ],
     'params' => $params,
 ];

@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\db\ActiveRecord;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "log".
@@ -35,7 +36,7 @@ class Log extends ActiveRecord
     public function rules()
     {
         return [
-            [['time', 'ip', 'userId', 'eventType'], 'required'],
+            [['ip', 'userId', 'eventType'], 'required'],
             [['time', 'userId', 'eventType'], 'integer'],
             [['ip', 'eventData'], 'string'],
         ];
@@ -53,17 +54,32 @@ class Log extends ActiveRecord
             'userId' => 'ID пользователя',
             'userName' => 'Пользователь',
             'eventType' => 'Тип события',
-            'eventName' => 'Название события',
+            'eventName' => 'Событие',
             'eventData' => 'Данные события',
         ];
     }
     
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => TimestampBehavior::className(),
+                'createdAtAttribute' => 'time',
+                'updatedAtAttribute' => false,
+            ],
+        ];
+    }
+
+
     public function getUser()
     {
-        return $this->hasOne(User::className(), ['id' => 'userId']);
+        return User::findIdentity($this->userId);
     }
     
-    public function userName()
+    public function getUserName()
     {
         return $this->user->username;
     }

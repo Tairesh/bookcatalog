@@ -78,6 +78,7 @@ class BookController extends Controller
         $model = new Book();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            Yii::$app->eventsLog->bookCreated($model);
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('create', [
@@ -97,7 +98,7 @@ class BookController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-//            var_dump($model); die();
+            Yii::$app->eventsLog->bookUpdated($model);
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
@@ -114,7 +115,9 @@ class BookController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+        Yii::$app->eventsLog->bookDeleted($model);
+        $model->delete();
 
         return $this->redirect(['index']);
     }
