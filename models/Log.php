@@ -19,6 +19,7 @@ use yii\behaviors\TimestampBehavior;
  * @property User $user
  * @property string $userName
  * @property string $eventName
+ * @property string $eventInfo
  */
 class Log extends ActiveRecord
 {
@@ -97,6 +98,34 @@ class Log extends ActiveRecord
                 return 'Книга изменена';
             case EventType::BOOK_DELETED:
                 return 'Книга удалена';
+        }
+    }
+    
+    private function dataInline($data) {
+        $res = [];
+        foreach ($data as $attr => $val) {
+            if ($attr === 'isAvailable') {
+                $val = $val ? 'Да' : 'Нет';
+            }
+            $res[] = (new Book())->getAttributeLabel($attr).': '.$val;
+        }
+        return join(', ', $res);
+    }
+    
+    public function getEventInfo()
+    {
+        $data = $this->eventData ? json_decode($this->eventData) : [];
+        switch ((int)$this->eventType) {
+            case EventType::LOGIN:
+            case EventType::LOGOUT:
+                return '';
+                
+            case EventType::BOOK_CREATED:
+                return 'Добавлена книга: '. $this->dataInline($data);
+            case EventType::BOOK_UPDATED:
+                return 'Книга изменена. Было: '.$this->dataInline($data->before).'. Стало: '.$this->dataInline($data->after);
+            case EventType::BOOK_DELETED:
+                return 'Удалена книга: '. $this->dataInline($data);
         }
     }
 }

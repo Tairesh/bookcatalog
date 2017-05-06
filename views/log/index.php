@@ -26,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'ip:ntext',
                 'userName',
                 'eventName',
-                // 'eventData:ntext',
+                'eventInfo:ntext',
 
             ],
         ]); ?>
