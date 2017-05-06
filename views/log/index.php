@@ -28,6 +28,23 @@ $this->params['breadcrumbs'][] = $this->title;
                 'eventName',
                 'eventInfo:ntext',
 
+                [
+                    'label' => 'Откат изменений',
+                    'format' => 'raw',
+                    'value' => function($model) {
+                        /* @var $model app\models\Log */
+                        return Html::beginForm(['/log/revert'], 'post')
+                            . Html::hiddenInput('eventId', $model->id)
+                            . Html::submitButton(
+                                'Откатить сюда',
+                                [
+                                    'class' => 'btn btn-danger',
+                                    'onclick' => 'return confirm("Вы действительно хотите отменить все изменения после этого?")'
+                                ]
+                            )
+                            . Html::endForm();
+                    }
+                ]
             ],
         ]); ?>
     <?php Pjax::end(); ?>

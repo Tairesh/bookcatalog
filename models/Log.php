@@ -104,6 +104,9 @@ class Log extends ActiveRecord
     private function dataInline($data) {
         $res = [];
         foreach ($data as $attr => $val) {
+            if (is_object($val)) {
+                continue;
+            } 
             if ($attr === 'isAvailable') {
                 $val = $val ? 'Да' : 'Нет';
             }
@@ -128,4 +131,23 @@ class Log extends ActiveRecord
                 return 'Удалена книга: '. $this->dataInline($data);
         }
     }
+    
+    public function cancel()
+    {
+        $data = $this->eventData ? json_decode($this->eventData) : [];
+        switch ((int)$this->eventType) {
+            case EventType::BOOK_CREATED:
+                Book::deleteAll(['id' => $data->id]);
+                break;
+            case EventType::BOOK_UPDATED:
+                Book::updateAll($data->before, ['id' => $data->before->id]);
+                break;
+            case EventType::BOOK_DELETED:
+                (new Book($data))->save();
+                break;
+        }
+        
+        $this->delete();
+    }
+    
 }

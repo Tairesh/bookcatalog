@@ -6,6 +6,7 @@ use Yii;
 use app\models\Log;
 use app\models\LogSearch;
 use yii\web\Controller;
+use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 
@@ -24,7 +25,7 @@ class LogController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index'],
+                        'actions' => ['index', 'revert'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -33,7 +34,7 @@ class LogController extends Controller
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'delete' => ['POST'],
+                    'revert' => ['POST'],
                 ],
             ],
         ];
@@ -51,6 +52,32 @@ class LogController extends Controller
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+        ]);
+    }
+    
+    /**
+     * Reverts catalog to submitted log event
+     * @return mixed
+     */
+    public function actionRevert()
+    {
+        $eventId = Yii::$app->request->post('eventId');
+        $event = Log::findOne($eventId);
+        if (is_null($event)) {
+            throw new NotFoundHttpException();
+        }
+        
+        $eventsToCancel = Log::find()
+                ->where(['>', 'id', $eventId])
+                ->orderBy(['id' => SORT_DESC])
+                ->all();
+        
+        foreach ($eventsToCancel as $event) {
+            $event->cancel();
+        }
+        
+        return $this->render('reverted', [
+            'count' => count($eventsToCancel),
         ]);
     }
 
