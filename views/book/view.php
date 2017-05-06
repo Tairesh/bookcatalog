@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use branchonline\lightbox\Lightbox;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Book */
@@ -32,7 +33,22 @@ $this->params['breadcrumbs'][] = $this->title;
             'authorName:ntext',
             'title:ntext',
             'year',
-            'image:image',
+            [
+                'attribute' => 'image',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    /* @var $model app\models\Book */
+                    return Lightbox::widget([
+                                'files' => [
+                                    [
+                                        'thumb' => $model->getImageUrl('image', 'preview'),
+                                        'original' => $model->getImageUrl('image'),
+                                        'title' => $model->title,
+                                    ],
+                                ]
+                    ]);
+                },
+            ],
             'isAvailable:boolean',
         ],
     ]) ?>

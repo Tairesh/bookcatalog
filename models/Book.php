@@ -15,25 +15,23 @@ use yii\db\ActiveRecord;
  * @property string $image
  * @property boolean $isAvailable
  */
-class Book extends ActiveRecord
-{
-    
+class Book extends ActiveRecord {
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'books';
     }
-    
+
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['authorName', 'title', 'year', 'isAvailable'], 'required'],
-            [['authorName', 'title', 'image'], 'string'],
+            [['authorName', 'title'], 'string'],
+//            [['image'], 'file', 'skipOnEmpty' => false, 'extensions' => 'png,jpg'],
             [['year'], 'integer'],
             [['isAvailable'], 'boolean'],
         ];
@@ -42,8 +40,7 @@ class Book extends ActiveRecord
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'id' => 'ID',
             'authorName' => 'Имя автора',
@@ -53,5 +50,30 @@ class Book extends ActiveRecord
             'isAvailable' => 'В наличии',
         ];
     }
-    
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors() {
+        return [
+            [
+                'class' => \maxmirazh33\image\Behavior::className(),
+                'savePathAlias' => '@app/web/images/',
+                'urlPrefix' => '/images/',
+                'crop' => true,
+                'attributes' => [
+                    'image' => [
+                        'crop' => false,
+                        'thumbnails' => [
+                            'preview' => [
+                                'width' => 50,
+                                'height' => 50,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+    }
+
 }

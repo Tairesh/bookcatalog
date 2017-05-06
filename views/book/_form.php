@@ -10,7 +10,7 @@ use yii\widgets\ActiveForm;
 
 <div class="book-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]); ?>
 
     <?= $form->field($model, 'authorName')->textInput() ?>
 
@@ -18,7 +18,7 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'year')->textInput() ?>
 
-    <?= $form->field($model, 'image')->textInput() ?>
+    <?= $form->field($model, 'image')->widget('maxmirazh33\image\Widget'); ?>
 
     <?= $form->field($model, 'isAvailable')->checkbox() ?>
 
