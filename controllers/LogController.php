@@ -67,17 +67,10 @@ class LogController extends Controller
             throw new NotFoundHttpException();
         }
         
-        $eventsToCancel = Log::find()
-                ->where(['>', 'id', $eventId])
-                ->orderBy(['id' => SORT_DESC])
-                ->all();
-        
-        foreach ($eventsToCancel as $event) {
-            $event->cancel();
-        }
+        $count = $event->revertTo();
         
         return $this->render('reverted', [
-            'count' => count($eventsToCancel),
+            'count' => $count,
         ]);
     }
 

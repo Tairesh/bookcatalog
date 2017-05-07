@@ -85,6 +85,10 @@ class Log extends ActiveRecord
         return $this->user->username;
     }
     
+    /**
+     * Название события
+     * @return string
+     */
     public function getEventName()
     {
         switch ((int)$this->eventType) {
@@ -101,6 +105,11 @@ class Log extends ActiveRecord
         }
     }
     
+    /**
+     * Форматирует данные из события в человекопонятном виде
+     * @param array $data
+     * @return string
+     */
     private function dataInline($data) {
         $res = [];
         foreach ($data as $attr => $val) {
@@ -115,6 +124,10 @@ class Log extends ActiveRecord
         return join(', ', $res);
     }
     
+    /**
+     * Описание действия
+     * @return string
+     */
     public function getEventInfo()
     {
         $data = $this->eventData ? json_decode($this->eventData) : [];
@@ -132,6 +145,27 @@ class Log extends ActiveRecord
         }
     }
     
+    /**
+     * Отменяет все действия после этого
+     * @return integer число отменённых действий
+     */
+    public function revertTo()
+    {
+        $eventsToCancel = Log::find()
+                ->where(['>', 'id', $this->id])
+                ->orderBy(['id' => SORT_DESC])
+                ->all();
+        
+        foreach ($eventsToCancel as $event) {
+            $event->cancel();
+        }
+        
+        return count($eventsToCancel);
+    }
+    
+    /**
+     * Отменяет это действие
+     */
     public function cancel()
     {
         $data = $this->eventData ? json_decode($this->eventData) : [];
